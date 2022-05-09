@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+. "$LEDGER_WORKDIR/common"
+
+# Description of the command usage
+cli_help_print() {
+    echo "
+        Command: print
+        Usage: 
+        print -f <file>
+    "
+    exit 1
+}
+
+# If there was no parameter, show the help
+[ ! -n "$1" ] && cli_help_print
+
+# Function for handling imports and printing files
+print_file() {
+    while IFS= read -r line; do                     # read file line by line
+        if [[ $line =~ !include ]]                  # search for !include lines
+        then
+            IFS=' ' read -ra WORDS <<< "$line"      # Split line by ' '
+            print_file "${WORDS[1]}"                # take the name of the file
+        else
+            printf '%s\n' "$line"                   # if it's not !include, just print it (echo ignores tabs)
+        fi
+    done < $1
+}
+
+print_file $1
