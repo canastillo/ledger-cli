@@ -22,7 +22,7 @@ print_file() {
         if [[ $line =~ !include ]]                  # search for !include lines
         then
             IFS=' ' read -ra WORDS <<< "$line"      # Split line by ' '
-            print_file "${WORDS[1]}"                # take the name of the file
+            print_file "${WORDS[1]}"                # print the file
         else
             printf '%s\n' "$line"                   # if it's not !include, just print it (echo ignores tabs)
         fi
