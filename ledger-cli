@@ -1,0 +1,81 @@
+#!/bin/bash
+
+set -e
+export LEDGER_WORKDIR=$(cd $(dirname $0) && pwd)
+
+# Info on how to use the CLI
+cli_help() {
+    cli_name=${0##*/}
+    echo "
+        Ledger CLI
+        Version: $(cat $LEDGER_WORKDIR/VERSION)
+        
+        Usage: $cli_name [command]
+
+        Commands:
+        balance, bal    Show account balances
+        register, reg   Show all transactions with running total
+        print           Print transactions in a format readable by ledger
+        *         Help
+    "
+  exit 1
+}
+
+# auxiliars
+parameter=""
+sort=""
+price=""
+file=""
+command=""
+
+# iterate over all arguments. Find parameters and files 
+for i; do 
+   case $i in
+    -*)
+      case $i in
+        --sort|-S)
+          parameter="sort"
+          ;;
+        --price-db)
+          parameter="price"
+          ;;
+        --file|-f)
+          parameter="file"
+          ;;
+      esac
+      ;;
+    *)
+      if [ "$parameter" != "" ]
+      then
+        case "$parameter" in
+          sort)
+            sort=$i ;;
+          price)
+            price=$i ;;
+          file)
+            file=$i ;;
+        esac
+        isParameter=false
+      else
+        command=$i
+      fi
+      ;;
+  esac
+done
+
+# Calls the right command or prints the help if command doesn't exist
+case $command in
+  balance|bal)
+    sh "$LEDGER_WORKDIR/commands/balance" "$file"
+    ;;
+  register|reg)
+    sh "$LEDGER_WORKDIR/commands/register" "$file"
+    ;;
+  print)
+    sh "$LEDGER_WORKDIR/commands/print" "$file"
+    ;;
+  *)
+    cli_help
+    ;;
+esac
+
