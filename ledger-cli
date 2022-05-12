@@ -55,7 +55,7 @@ for i; do
           file)
             file=$i ;;
         esac
-        isParameter=false
+        parameter=""
       else
         command=$i
       fi
