@@ -52,7 +52,7 @@ format_transactions() {
     echo "Transaction: $transaction"
     
     [[ $transaction =~ [[:alpha:]]*:([[:alpha:]]*[[:space:]]*)* ]] && echo "concept: ${BASH_REMATCH[0]}"
-    [[ $transaction =~ (-|\$|[1-9]{1}).* ]] && echo "amount: ${BASH_REMATCH[0]}"
+    [[ $transaction =~ (-|\$|[0-9]{1}).* ]] && echo "amount: ${BASH_REMATCH[0]}"
 }
 
 read_file $1
