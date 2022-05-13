@@ -13,7 +13,6 @@ cli_help() {
         Usage: $cli_name [command]
 
         Commands:
-        balance, bal    Show account balances
         register, reg   Show all transactions with running total
         print           Print transactions in a format readable by ledger
         help            Help
