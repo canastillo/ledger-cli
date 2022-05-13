@@ -18,6 +18,8 @@ cli_help_register() {
 
 
 read_file() {
+    file=$1
+
     while IFS= read line || [ -n "$line" ]; do      # read file line by line
         if [[ $line =~ !include ]]                  # search for !include lines
         then
@@ -25,34 +27,35 @@ read_file() {
             read_file "${WORDS[1]}"                 # print the included file
         elif ! [[ $line =~ \; ]]                    # Ignore lines starting with ";"
         then
-            identify_data $line                     # Let's identify which data the line has
+            identify_data "$line"                   # Let's identify which data the line has
         fi
-    done < $1
+    done <$file
 }
 
 # Distinguish between metadata (dates and concepts) and transactions
 identify_data() {
-    if [[ $line =~ ^[0-9]{4}/[0-9]{1,2}/[0-9]{1,2}(.+) ]]
+    data=$1
+
+    if [[ $data =~ ^[0-9]{4}/[0-9]{1,2}/[0-9]{1,2}(.+) ]]
     then
         IFS=' ' read -ra WORDS <<< "${BASH_REMATCH[0]}"         # WORDS[0] -> date
         format_date_concept ${WORDS[0]} "${BASH_REMATCH[1]}"    # BASH_REMATCH[1] -> concept
     else
-        format_transactions "$line"
+        format_transactions "$data"
     fi
 }
 
 format_date_concept() {
     date=$1
     concept=`echo $2 | xargs`     # trim concept
-    echo "Date: $date. Concept: $concept"
+    echo "Date: $date Concept: $concept"
 }
 
 format_transactions() {
     transaction=$1
-    echo "Transaction: $transaction"
     
-    [[ $transaction =~ [[:alpha:]]*:([[:alpha:]]*[[:space:]]*)* ]] && echo "concept: ${BASH_REMATCH[0]}"
-    [[ $transaction =~ (-|\$|[0-9]{1}).* ]] && echo "amount: ${BASH_REMATCH[0]}"
+    [[ $transaction =~ [[:alpha:]]*:([[:alpha:]]*[[:space:]]*)* ]] && echo "concept: ${BASH_REMATCH[0]}" || :
+    [[ $transaction =~ (-|\$|[0-9]{1}).* ]] && echo "amount: ${BASH_REMATCH[0]}" || :
 }
 
 read_file $1
