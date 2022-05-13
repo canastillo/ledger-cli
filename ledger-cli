@@ -16,7 +16,7 @@ cli_help() {
         balance, bal    Show account balances
         register, reg   Show all transactions with running total
         print           Print transactions in a format readable by ledger
-        *         Help
+        help            Help
     "
   exit 1
 }
@@ -29,10 +29,10 @@ file=""
 command=""
 
 # iterate over all arguments. Find parameters and files 
-for i; do 
-   case $i in
+for argument; do 
+   case $argument in
     -*)
-      case $i in
+      case $argument in
         --sort|-S)
           parameter="sort"
           ;;
@@ -49,15 +49,15 @@ for i; do
       then
         case "$parameter" in
           sort)
-            sort=$i ;;
+            sort=$argument ;;
           price)
-            price=$i ;;
+            price=$argument ;;
           file)
-            file=$i ;;
+            file=$argument ;;
         esac
         parameter=""
       else
-        command=$i
+        command=$argument
       fi
       ;;
   esac
