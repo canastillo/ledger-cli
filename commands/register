@@ -16,6 +16,10 @@ cli_help_register() {
 # If there was no parameter, print the help
 [ ! -n "$1" ] && cli_help_register
 
+current_sum=0
+value=0
+concept=""
+block=""
 
 read_file() {
     file=$1
@@ -30,19 +34,20 @@ read_file() {
             identify_data "$line"                   # Let's identify which data the line has
         fi
     done <$file
+
+    # column -t <<< $block
 }
 
 # Distinguish between metadata (dates and concepts) and transactions
 identify_data() {
     data=$1
-
     if [[ $data =~ ^[0-9]{4}/[0-9]{1,2}/[0-9]{1,2}(.+) ]]
     then
         IFS=' ' read -ra WORDS <<< "${BASH_REMATCH[0]}"
         date=$(format_date ${WORDS[0]})                         # WORDS[0] -> date
-        echo $date "${BASH_REMATCH[1]}"                         # BASH_REMATCH[1] -> concept
+        concept="$date ${BASH_REMATCH[1]}"                      # BASH_REMATCH[1] -> concept
     else
-        format_transactions "$data"
+        get_transaction_data "$data"
     fi
 }
 
@@ -95,11 +100,44 @@ format_date() {
     echo "$new_date"
 }
 
-format_transactions() {
-    transaction=$1
+get_transaction_data() {
+    transaction=`echo $1 | xargs`
+    text=""
+    amount=""
+
+    [[ $transaction =~ [[:alpha:]]*:([[:alpha:]]*[[:space:]]*)* ]] && text="${BASH_REMATCH[0]}" || :
+
+    if [[ $transaction =~ (-|\$|[0-9]{1}).* ]]
+    then
+        amount=${BASH_REMATCH[0]}
+        add_number $amount
+    else
+        restart_sum
+        amount=$value
+        value=0
+    fi
+
+    # block="$block$concept $text $amount $current_sum\n"
+
+    awk '{ printf "%-40s %-20s %-20s %-20s\n", $concept, $text, $amount, $current_sum}'
+
+    if  [ concept != "" ]
+    then
+        concept=""
+    fi
+}
+
+add_number() {
+    qtty=$1
     
-    [[ $transaction =~ [[:alpha:]]*:([[:alpha:]]*[[:space:]]*)* ]] && echo "concept: ${BASH_REMATCH[0]}" || :
-    [[ $transaction =~ (-|\$|[0-9]{1}).* ]] && echo "amount: ${BASH_REMATCH[0]}" || :
+    # Remove the $ signs and add the number to the sum
+    qtty=`echo $amount| tr -d $`
+    current_sum=$(bc -l <<<"${current_sum}+${qtty}")
+}
+
+restart_sum() {
+    value=$(bc -l <<<"${current_sum}*-1")
+    current_sum=0
 }
 
 read_file $1
