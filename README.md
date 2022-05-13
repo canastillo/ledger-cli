@@ -1,5 +1,5 @@
 # ledger-cli
-This is a breakable toy. An activity for the Encora Apprenticeship.
+This is a breakable toy. An activity for the Encora Apprenticeship. It's a small implementation of [ledger-cli](https://www.ledger-cli.org/), a tool for command-line accounting.
 
 # Usage
 1) Git clone this repo.
