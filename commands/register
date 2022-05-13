@@ -38,17 +38,61 @@ identify_data() {
 
     if [[ $data =~ ^[0-9]{4}/[0-9]{1,2}/[0-9]{1,2}(.+) ]]
     then
-        IFS=' ' read -ra WORDS <<< "${BASH_REMATCH[0]}"         # WORDS[0] -> date
-        format_date_concept ${WORDS[0]} "${BASH_REMATCH[1]}"    # BASH_REMATCH[1] -> concept
+        IFS=' ' read -ra WORDS <<< "${BASH_REMATCH[0]}"
+        date=$(format_date ${WORDS[0]})                         # WORDS[0] -> date
+        echo $date "${BASH_REMATCH[1]}"                         # BASH_REMATCH[1] -> concept
     else
         format_transactions "$data"
     fi
 }
 
-format_date_concept() {
-    date=$1
-    concept=`echo $2 | xargs`     # trim concept
-    echo "Date: $date Concept: $concept"
+format_date() {
+    original_date=$1
+    month=""
+    day=""
+
+    IFS='/' read -ra WORDS <<< "$original_date"
+    
+    # Get month from number of month
+    case "${WORDS[1]}" in
+        1|01)
+            month="Jan" ;;
+        2|02)
+            month="Feb" ;;
+        3|03)
+            month="Mar" ;;
+        4|04)
+            month="Apr" ;;
+        5|05)
+            month="May" ;;
+        6|06)
+            month="Jun" ;;
+        7|07)
+            month="Jul" ;;
+        8|08)
+            month="Aug" ;;
+        9|09)
+            month="Sep" ;;
+        10)
+            month="Oct" ;;
+        11)
+            month="Nov" ;;
+        12)
+            month="Dec" ;;
+    esac
+
+    # Make all dates two digit
+    case "${WORDS[2]}" in
+        [0-9])
+            day="0${WORDS[2]}"
+            ;;
+        *)
+            day="${WORDS[2]}"
+            ;;
+    esac
+
+    new_date="${WORDS[0]}-$month-$day"
+    echo "$new_date"
 }
 
 format_transactions() {
