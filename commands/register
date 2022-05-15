@@ -114,7 +114,9 @@ get_transaction_data() {
         value=0
     fi
 
-    printf "%-60s %-20s %-10s %-10s\n" "$concept" "$text" "$amount" "$current_sum"
+    (( ${#concept} > 52 )) && concept="${concept:0:50}..." # add ellipsis if concept is way too long
+    
+    printf "%-55s %-25s %-15s %-15s\n" "$concept" "$text" "$amount" "$current_sum"
 
     if  [ concept != "" ]
     then
