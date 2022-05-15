@@ -98,7 +98,7 @@ format_date() {
 }
 
 get_transaction_data() {
-    transaction=`echo $1 | xargs`
+    transaction=`echo $1 | xargs`   # trim transaction
     text=""
     amount=""
 
@@ -127,7 +127,13 @@ add_number() {
     
     # Remove the $ signs and add the number to the sum
     qtty=`echo $amount| tr -d $`
-    current_sum=$(bc -l <<<"${current_sum}+${qtty}")
+
+    IFS=' ' read -ra WORDS <<< "$amount"      # Split line by ' ' (in case it's BTC)
+
+    if ! [ "${WORDS[1]}" == "BTC" ]
+    then
+        current_sum=$(bc -l <<<"${current_sum}+${qtty}")
+    fi
 }
 
 restart_sum() {
