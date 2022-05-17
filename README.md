@@ -26,8 +26,8 @@ Print the usage of the cli tool
 
 
 # What's missing?
-
-- Flags are recognized but not processed
+- `!include` for importing files within files is supported (you can import your files from an index.ledger file)
+- Flags are recognized but not all of them are processed
 - Only the --file, -f flag is supported
 - I'm still working on the format of register command
 - Balance command isn't implemented yet 
