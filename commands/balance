@@ -1,23 +1,23 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 . "$LEDGER_WORKDIR/common"
 
 # Description of the command usage
-cli_help_deploy() {
+cli_help_balance() {
     echo "
         Command: balance
         Usage: 
-        balance project_name
+        bal -f <file>
     "
     exit 1
 }
 
 # If there was no parameter, print the help
-[ ! -n "$1" ] && cli_help_deploy
+[ ! -n "$1" ] && cli_help_balance
 
 export LEDGER_FILE=$1
 
-cli_log "Deployment BEGIN"
+cli_log "Balance BEGIN"
 cli_log "You sent $1"
-cli_log "Deployment END"
+cli_log "Balance END"

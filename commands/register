@@ -116,7 +116,21 @@ get_transaction_data() {
 
     (( ${#concept} > 52 )) && concept="${concept:0:50}..." # add ellipsis if concept is way too long
     
-    printf "%-55s %-25s %-15s %-15s\n" "$concept" "$text" "$amount" "$current_sum"
+    if  [ current_sum != "0" ]
+    then
+        echo $current_sum
+        current_sum="\$$current_sum"
+        echo $current_sum
+    fi
+
+    Ando trabajando en el formateo de los números del output de register
+    Ando trabajando en el formateo de los números del output de register
+    Ando trabajando en el formateo de los números del output de register
+    Ando trabajando en el formateo de los números del output de register
+    
+    # (( "${#current_sum}" != "0" )) && current_sum="\$$current_sum"    # Add $ sign to current sum
+    # printf "%-50s %-50s" "$amount" "$current_sum"
+    # printf "%-55s %-25s %15s %15s\n" "$concept" "$text" "$amount" "$current_sum"
 
     if  [ concept != "" ]
     then
@@ -134,11 +148,14 @@ add_number() {
 
     if ! [ "${WORDS[1]}" == "BTC" ]
     then
+        qtty=`printf "%.2f" $qtty`
+        current_sum=`echo $current_sum| tr -d $`
         current_sum=$(bc -l <<<"${current_sum}+${qtty}")
     fi
 }
 
 restart_sum() {
+    current_sum=`echo $current_sum| tr -d $`
     value=$(bc -l <<<"${current_sum}*-1")
     current_sum=0
 }

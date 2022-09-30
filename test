@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Use Perl to find directory of script
+TRUE_SCRIPT=`PERL_BADLANG=0 perl -e 'use Cwd "abs_path"; print abs_path(shift)'`
+ROOT_DIR=$TRUE_SCRIPT/bin 
+export PATH=$PATH:$ROOT_DIR
+
+echo $TRUE_SCRIPT
+echo $ROOT_DIR
+echo $PATH
